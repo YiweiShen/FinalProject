@@ -1,47 +1,53 @@
 #!/usr/bin/env python3
+# Customer class
 
-import datetime
+from Dish import Dish
 from pymongo import MongoClient
 
 class Customer():
     
-    def __init__(self):
-        self.customers = MongoClient().project_db.customers
-
-    # CREATE
-
-    def create_one_line(self, one_record):
-        self.customers.insert_one(one_record)
-
-    def create_multiple_lines(self, record_list):
-        self.customers.insert_many(record_list)
-
-    # READ
-
-    def read_one_line(self, match_dict):
-        match = self.customers.find_one(match_dict)
-        return match
-
-    def read_multiple_lines(self, match_dict):
-        match = self.customers.find_many(match_dict)
-        return match
-
-    # UPDATE
-
-    def update_one_line(self, match_dict, update_dict):
-        self.customers.update_one(match_dict, {'$set': update_dict})
-
-    def update_multiple_lines(self, match_dict, update_dict):
-        self.customers.update_many(match_dict, {'$set': update_dict})
-
-    # DELETE
-
-    def delete_one_line(self, match_dict):
-        self.customers.delete_one(match_dict)
-
-    def delete_multiple_lines(self, match_dict):
-        self.customers.delete_many(match_dict)
+    def __init__(self, customer_dict):
+        self.customer_id = customer_dict['customer_id']
+        self.first_name = customer_dict['first_name']
+        self.last_name = customer_dict['last_name']
+        self.gender = customer_dict['gender']
+        self.address = customer_dict['address']
+        self.email = customer_dict['email']
+        self.phone = customer_dict['phone']
+        self.favorite_dishes = customer_dict['favorite_dishes'] # list of dish ID that are favorites of the customer
+        self.registration_date = customer_dict['registration_date']
+        self.allergy_ingredient = customer_dict['allergy_ingredient']
+        self.dish_db = MongoClient().project_db.dishes
 
 
-if __name__ == '__main__':
-    c = Customer()
+    def __str__(self):
+        customer_str = f'Customer ID: {self.customer_id}\n' + 
+                       f'First Name: {self.first_name}\n' +
+                       f'Last Name: {self.last_name}\n' +
+                       f'Gender: {self.gender}\n' +
+                       f'Address: {self.address}\n' +
+                       f'Email: {self.eamil}\n' +
+                       f'Phone: {self.phone}\n' +
+                       f'Favarote Dishes: {self.get_favorite_dishes()}\n' +
+                       f'Registration Date: {self.registration_date}\n' +
+                       f'Allergy to: {self.allergy_ingredient}\n' +
+                       f'Avoid Dishes: {self.avoid_dishes()}\n' +
+        return customer_str
+
+    def get_favorite_dishes(self):
+        if len(self.favorite_dishes) == 0:
+            return f''
+        else:
+            favorite_dishes = []
+            for i in self.favorite_dishes:
+                r = self.dish_db.find_one({'dish_id': i})
+                favorite_dishes.append(r['name'])
+            return favorite_dishes
+    
+    def avoid_dishes(self):
+        dishes = self.dish_db.find()
+        dish_to_avoid = []
+        for i in self.allergy_ingredient:
+            for j in dishes:
+                if i in j['ingredients']:
+                    dish_to_avoid.append({j['dish_id']:j['name']})
