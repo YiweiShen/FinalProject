@@ -5,7 +5,7 @@
 ![](https://img.shields.io/badge/Emerging%20Technologies-A%20Random%20Group-orange)
 
 ## Application
-- Database for a restaurant using MongoDB
+- Database for a restaurant using MongoDB...
 - Main python package: PyMongo for developing and interact with MongoDB database.
 
 ### Problem to Solve	
