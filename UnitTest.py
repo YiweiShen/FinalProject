@@ -51,4 +51,5 @@ class Test(unittest.TestCase):
         self.assertIsInstance(testCase3,db_system)
 
 
-unittest.main()
+if __name__ == '__main__':
+    unittest.main()
